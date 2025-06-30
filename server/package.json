@@ -1,0 +1,46 @@
+{
+  "name": "angular-electron-todo",
+  "version": "0.0.0",
+  "main": "dist/main.js",
+  "scripts": {
+    "build": "tsc",
+    "start": "npm run build && electron .",
+    "watch": "tsc -w",
+    "package": "npm run build && electron-builder"
+  },
+  "engines": {
+    "node": "^20.18.1"
+  },
+  "devDependencies": {
+    "@types/node": "^24.0.6",
+    "electron": "^37.1.0",
+    "electron-builder": "^26.0.12",
+    "typescript": "^5.8.3"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "electron-serve": "^1.3.0"
+  },
+  "build": {
+    "appId": "com.example.angularelectrontodo",
+    "productName": "AngularElectronTodo",
+    "files": [
+      "dist/**/*"
+    ],
+    "directories": {
+      "output": "release"
+    },
+    "extraResources": [
+      {
+        "from": "../client/dist/todo-app",
+        "to": "app",
+        "filter": [
+          "**/*"
+        ]
+      }
+    ]
+  }
+}

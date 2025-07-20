@@ -1,5 +1,29 @@
-/* You can add global styles to this file, and also import other style files */
+// 1. Angular MaterialのSass APIをインポート
+@use '@angular/material' as mat;
 
+// 2. このファイルで定義するコンポーネントのテーマをインクルード
+// (mat.core()は一度だけインクルードする必要があります)
+@include mat.core();
+
+// 3. カラーパレットを定義
+// Primaryカラー: Light Greenパレットを使用
+$br-operation-toolbok-primary: mat.define-palette(mat.$light-green-palette, 800);
+// Accentカラー: Tealパレットを使用 (A200, A100, A400は色の濃さのフォールバック)
+$br-operation-toolbok-accent: mat.define-palette(mat.$teal-palette, 500, 400, 600);
+// Warnカラー: Orangeパレットをそのまま使用
+$br-operation-toolbok-warn: mat.define-palette(mat.$orange-palette);
+
+// 4. パレットからライトテーマを作成
+$br-operation-toolbok-theme: mat.define-light-theme((color: (primary: $br-operation-toolbok-primary,
+                accent: $br-operation-toolbok-accent,
+                warn: $br-operation-toolbok-warn,
+            )));
+
+// 5. 作成したテーマをすべてのAngular Materialコンポーネントに適用
+@include mat.all-component-themes($br-operation-toolbok-theme);
+
+
+/* Global styles */
 html,
 body {
     height: 100%;
@@ -10,15 +34,22 @@ body {
     font-family: Roboto, "Helvetica Neue", sans-serif;
 }
 
-/* 成功通知用のスナックバー */
+/* 成功通知用のスナックバー (テーマのPrimaryカラーに合わせて変更) */
 .success-snackbar {
-    background-color: #4CAF50;
-    color: white;
+    background-color: mat.get-color-from-palette($br-operation-toolbok-primary, 400);
+    color: mat.get-color-from-palette($br-operation-toolbok-primary, '400-contrast');
+    // .success-snackbar の中にあるボタンの文字色を直接指定
+    .mat-mdc-button.mat-mdc-snack-bar-action {
+        color: mat.get-color-from-palette($br-operation-toolbok-primary, '400-contrast');
+    }
 }
 
-/* エラー通知用のスナックバー */
+/* エラー通知用のスナックバー (テーマのWarnカラーを使用) */
 .error-snackbar {
-    background-color: #f44336;
-    /* 赤 */
-    color: white;
+    background-color: mat.get-color-from-palette($br-operation-toolbok-warn, 700);
+    color: mat.get-color-from-palette($br-operation-toolbok-warn, '700-contrast');
+    // .error-snackbar の中にあるボタンの文字色を直接指定
+    .mat-mdc-button.mat-mdc-snack-bar-action {
+        color: mat.get-color-from-palette($br-operation-toolbok-warn, '700-contrast');
+    }
 }

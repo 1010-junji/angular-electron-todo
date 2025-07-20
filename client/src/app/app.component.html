@@ -1,31 +1,37 @@
-<mat-sidenav-container class="sidenav-container">
-  <!-- サイドナビゲーション -->
-  <mat-sidenav #sidenav mode="side" opened class="sidenav">
-    <mat-nav-list>
-      <!-- 通常機能のリンクをループで生成 -->
-      <a mat-list-item *ngFor="let feature of features" [routerLink]="feature.path" routerLinkActive="active-link">
-        <mat-icon matListItemIcon>{{ feature.icon }}</mat-icon>
-        <span matListItemTitle>{{ feature.name }}</span>
-      </a>
-    </mat-nav-list>
-    <!-- スペーサーで設定メニューを下に配置 -->
-    <div class="spacer"></div>
-    <mat-nav-list>
-      <!-- 設定画面へのリンク -->
-      <a mat-list-item [routerLink]="settings.path" routerLinkActive="active-link">
-        <mat-icon matListItemIcon>{{ settings.icon }}</mat-icon>
-        <span matListItemTitle>{{ settings.name }}</span>
-      </a>
-    </mat-nav-list>
-  </mat-sidenav>
+<div class="app-container">
 
-  <!-- メインコンテンツ領域 -->
-  <mat-sidenav-content>
-    <mat-toolbar color="primary">
-      <span>{{ title }}</span>
-    </mat-toolbar>
-    <!-- ここに各機能のコンポーネントが描画される -->
-    <router-outlet></router-outlet>
-  </mat-sidenav-content>
+  <mat-toolbar color="primary" class="app-toolbar">
+    <button mat-icon-button (click)="sidenav.toggle()" matTooltip="ナビゲーションを開閉">
+      <mat-icon>menu</mat-icon>
+    </button>
+    <span>{{ title }}</span>
+  </mat-toolbar>
 
-</mat-sidenav-container>
+  <mat-sidenav-container class="sidenav-container">
+
+    <mat-sidenav #sidenav mode="side" opened class="sidenav">
+      <div class="sidenav-content-wrapper">
+        <mat-nav-list class="main-nav-list">
+          <a mat-list-item *ngFor="let feature of features" [routerLink]="feature.path" routerLinkActive="active-link">
+            <mat-icon matListItemIcon>{{ feature.icon }}</mat-icon>
+            <span matListItemTitle>{{ feature.name }}</span>
+          </a>
+        </mat-nav-list>
+
+        <div class="spacer"></div>
+
+        <mat-nav-list class="settings-nav-list">
+          <a mat-list-item [routerLink]="settings.path" routerLinkActive="active-link">
+            <mat-icon matListItemIcon>{{ settings.icon }}</mat-icon>
+            <span matListItemTitle>{{ settings.name }}</span>
+          </a>
+        </mat-nav-list>
+      </div>
+    </mat-sidenav>
+
+    <mat-sidenav-content>
+      <router-outlet></router-outlet>
+    </mat-sidenav-content>
+
+  </mat-sidenav-container>
+</div>

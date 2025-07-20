@@ -1,32 +1,79 @@
-.sidenav-container {
-    height: 100%;
-}
-
-.sidenav {
-    width: 240px;
+// Flexboxを使って、ツールバーとメイン領域を縦に並べる
+.app-container {
     display: flex;
     flex-direction: column;
+    height: 100vh;
 }
 
+// ツールバーのスタイル
+.app-toolbar {
+    flex-shrink: 0;
+
+    button[mat-icon-button] {
+        margin-left: -8px;
+    }
+
+    span {
+        margin-left: 8px;
+    }
+}
+
+// sidenav-containerは残りの高さをすべて使うようにする
+.sidenav-container {
+    flex-grow: 1;
+    overflow: auto;
+}
+
+// サイドナビ自体のスタイル
+.sidenav {
+    width: 240px;
+}
+
+// ツールバーとサイドナビ内の要素のスタイル
 .spacer {
     flex: 1 1 auto;
-    /* 残りのスペースをすべて埋める */
-}
-
-.mat-toolbar {
-    position: sticky;
-    top: 0;
-    z-index: 2;
 }
 
 .active-link {
-    background-color: rgba(63, 81, 181, 0.15);
-    /* Primary color with opacity */
-    color: #3f51b5;
-    /* Primary color */
+    // indigo(#3f51b5) から green(#4CAF50) のテーマカラーに変更
+    background-color: rgba(76, 175, 80, 0.15);
+    /* Green 500 with opacity */
+    color: #689F38;
+    /* Light Green 700 */
 
     .mat-icon {
-        color: #3f51b5;
-        /* Primary color */
+        color: #689F38;
+        /* Light Green 700 */
     }
+}
+
+// サイドナビのリストアイテム内のアイコンに右マージンを追加
+.mat-nav-list a[mat-list-item] .mat-icon {
+    margin-right: 16px;
+}
+
+
+// メインのナビゲーションリストの下パディングを削除
+.main-nav-list {
+    padding-bottom: 0;
+}
+
+// 設定のナビゲーションリスト
+.settings-nav-list {
+    // セパレーターとして上に破線を追加
+    border-top: 1px dashed rgba(0, 0, 0, 0.12);
+    margin-top: 8px;
+    padding-top: 0px;
+}
+
+// サイドナビのリストアイテムのテキストスタイルを上書き
+.mat-nav-list a[mat-list-item] span[matListItemTitle] {
+    font-size: 14px; 
+}
+
+// サイドナビ内のコンテンツをラップするラッパー
+.sidenav-content-wrapper {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
 }

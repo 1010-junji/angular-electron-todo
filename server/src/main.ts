@@ -1,16 +1,12 @@
 import { app, BrowserWindow, ipcMain } from 'electron';
 import * as path from 'path';
 import * as fs from 'fs';
-import serve from 'electron-serve';
+import mysql from 'mysql2/promise';
 
-// レンダラープロセスと型を共有します
-import type { Todo } from '../../client/src/typings.d';
+import type { Todo, Settings, DbResult } from '../../client/src/typings.d';
 
-// Electronが提供するisPackagedプロパティを使用する。
-// アプリがパッケージ化されている場合(本番)はtrue、されていない場合(開発)はfalseを返す。
 const isDev = !app.isPackaged;
 
-// 本番モード用のハンドラを事前に準備する
 let loadURL: (win: BrowserWindow) => void;
 if (!isDev) {
   const serve = require('electron-serve');
@@ -23,25 +19,19 @@ let mainWindow: BrowserWindow | null = null;
 
 function createWindow(): void {
   mainWindow = new BrowserWindow({
-    width: 800,
-    height: 600,
+    width: 1024,
+    height: 768,
     webPreferences: {
-      // preloadスクリプトを指定。レンダラープロセス内で実行される前に読み込まれる
       preload: path.join(__dirname, 'preload.js'),
-      // Context Isolationはセキュリティ上trueが推奨
       contextIsolation: true,
-      // レンダラープロセスでNode.jsのAPIを使えなくする（セキュリティ上重要）
       nodeIntegration: false,
     },
   });
 
   if (isDev) {
-    // 開発モードの場合: Angularの開発サーバーに接続
     mainWindow.loadURL('http://localhost:4200');
-    // 開発ツールを自動で開く
     mainWindow.webContents.openDevTools();
   } else {
-    // 本番モード: 事前に準備しておいたハンドラを使ってロードする
     loadURL(mainWindow);
   }
 
@@ -51,13 +41,11 @@ function createWindow(): void {
 }
 
 app.on('ready', createWindow);
-
 app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') {
     app.quit();
   }
 });
-
 app.on('activate', () => {
   if (mainWindow === null) {
     createWindow();
@@ -66,35 +54,122 @@ app.on('activate', () => {
 
 // --- IPC通信 (レンダラープロセスとの連携) ---
 
-// ユーザーデータを保存するファイルのパスを取得
-// app.getPath('userData') はOSごとに適切なアプリケーションデータ保存場所を返す
-// 例: Windows: C:\Users\<username>\AppData\Roaming\<YourAppName>
-const todosFilePath = path.join(app.getPath('userData'), 'todos.json');
+const userDataPath = app.getPath('userData');
+const todosFilePath = path.join(userDataPath, 'todos.json');
+const settingsFilePath = path.join(userDataPath, 'settings.json');
 
-// レンダラーからの'save-todos'メッセージを受け取る
+
+// --- TODO機能のハンドラ ---
 ipcMain.on('save-todos', (event, todos: Todo[]) => {
   try {
-    // 受け取ったTODOデータをJSON形式でファイルに書き込む
     fs.writeFileSync(todosFilePath, JSON.stringify(todos, null, 2));
   } catch (err) {
     console.error('Failed to save todos:', err instanceof Error ? err.message : err);
   }
 });
 
-// レンダラーからの'load-todos'メッセージを処理する
 ipcMain.handle('load-todos', async (): Promise<Todo[]> => {
   try {
-    // ファイルが存在するか確認
     if (fs.existsSync(todosFilePath)) {
-      // ファイルを読み込んで内容をパースして返す
       const data = fs.readFileSync(todosFilePath, 'utf8');
-      // JSON.parseの結果はanyなので、型アサーションするか、バリデーションライブラリを使うのがより安全です
       return JSON.parse(data) as Todo[];
     }
-    // ファイルがなければ空の配列を返す
     return [];
   } catch (err) {
     console.error('Failed to load todos:', err);
     return [];
+  }
+});
+
+// --- 設定機能のハンドラ ---
+ipcMain.on('save-settings', (event, settings: Settings) => {
+  try {
+    fs.writeFileSync(settingsFilePath, JSON.stringify(settings, null, 2));
+  } catch (err) {
+    console.error('Failed to save settings:', err instanceof Error ? err.message : err);
+  }
+});
+
+ipcMain.handle('load-settings', async (): Promise<Settings> => {
+  try {
+    if (fs.existsSync(settingsFilePath)) {
+      const data = fs.readFileSync(settingsFilePath, 'utf8');
+      return JSON.parse(data) as Settings;
+    }
+    return {} as Settings;
+  } catch (err) {
+    console.error('Failed to load settings:', err);
+    return {} as Settings;
+  }
+});
+
+
+// --- DB操作機能のハンドラ ---
+
+/**
+ * 設定ファイルを読み込むヘルパー関数
+ */
+function readSettings(): Settings | null {
+  try {
+    if (fs.existsSync(settingsFilePath)) {
+      const data = fs.readFileSync(settingsFilePath, 'utf8');
+      return JSON.parse(data) as Settings;
+    }
+    return null;
+  } catch (error) {
+    console.error('Failed to read settings file:', error);
+    return null;
+  }
+}
+
+// テーブル一覧を取得するハンドラ
+ipcMain.handle('get-tables', async (): Promise<DbResult<string[]>> => {
+  const settings = readSettings();
+  if (!settings || !settings.mysql || !settings.mysql.database) {
+    return { success: false, error: 'データベース名が設定されていません。' };
+  }
+
+  let connection: mysql.Connection | null = null;
+  try {
+    connection = await mysql.createConnection(settings.mysql);
+    const [rows] = await connection.query<mysql.RowDataPacket[]>('SHOW TABLES');
+    const tables = rows.map(row => Object.values(row)[0] as string);
+    return { success: true, data: tables };
+  } catch (err: any) {
+    console.error('Failed to get tables:', err);
+    return { success: false, error: `DBエラー: ${err.message}` };
+  } finally {
+    if (connection) {
+      await connection.end();
+    }
+  }
+});
+
+// 指定されたテーブルのデータを取得するハンドラ
+ipcMain.handle('get-table-data', async (event, tableName: string): Promise<DbResult<any[]>> => {
+  if (!tableName) {
+    return { success: false, error: 'テーブル名が指定されていません。' };
+  }
+
+  const settings = readSettings();
+  if (!settings || !settings.mysql) {
+    return { success: false, error: 'DB接続設定が不十分です。' };
+  }
+  
+  let connection: mysql.Connection | null = null;
+  try {
+    connection = await mysql.createConnection(settings.mysql);
+    const [rows] = await connection.query<mysql.RowDataPacket[]>(
+      'SELECT * FROM ?? LIMIT 100',
+      [tableName]
+    );
+    return { success: true, data: rows };
+  } catch (err: any) {
+    console.error(`Failed to get data from table ${tableName}:`, err);
+    return { success: false, error: `DBエラー: ${err.message}` };
+  } finally {
+    if (connection) {
+      await connection.end();
+    }
   }
 });

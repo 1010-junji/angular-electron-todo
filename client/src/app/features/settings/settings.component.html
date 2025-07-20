@@ -1,0 +1,72 @@
+<div class="content-wrapper">
+    <mat-card>
+        <mat-card-header>
+            <mat-card-title>環境設定</mat-card-title>
+            <mat-card-subtitle>アプリケーションの各種設定を行います。</mat-card-subtitle>
+        </mat-card-header>
+
+        <mat-card-content *ngIf="isElectron; else browserMode">
+            <form [formGroup]="settingsForm" (ngSubmit)="onSubmit()">
+
+                <!-- MySQL 設定セクション -->
+                <section formGroupName="mysql" class="settings-section">
+                    <h2>
+                        <mat-icon>storage</mat-icon>
+                        MySQL 接続設定
+                    </h2>
+
+                    <div class="form-grid">
+                        <mat-form-field appearance="fill">
+                            <mat-label>ホスト</mat-label>
+                            <input matInput formControlName="host" placeholder="localhost">
+                        </mat-form-field>
+
+                        <mat-form-field appearance="fill">
+                            <mat-label>ポート</mat-label>
+                            <input matInput type="number" formControlName="port" placeholder="3306">
+                            <mat-error *ngIf="settingsForm.get('mysql.port')?.hasError('required')">
+                                ポート番号は必須です。
+                            </mat-error>
+                            <mat-error *ngIf="settingsForm.get('mysql.port')?.hasError('pattern')">
+                                ポート番号は数字で入力してください。
+                            </mat-error>
+                        </mat-form-field>
+
+                        <mat-form-field appearance="fill">
+                            <mat-label>ユーザー名</mat-label>
+                            <input matInput formControlName="user" placeholder="root">
+                        </mat-form-field>
+
+                        <mat-form-field appearance="fill">
+                            <mat-label>パスワード</mat-label>
+                            <input matInput type="password" formControlName="password">
+                        </mat-form-field>
+
+                        <mat-form-field appearance="fill" class="full-width">
+                            <mat-label>データベース名</mat-label>
+                            <input matInput formControlName="database" placeholder="mydatabase">
+                        </mat-form-field>
+                    </div>
+                </section>
+
+                <mat-card-actions align="end">
+                    <button mat-raised-button color="primary" type="submit"
+                        [disabled]="settingsForm.pristine || settingsForm.invalid">
+                        保存
+                    </button>
+                </mat-card-actions>
+            </form>
+        </mat-card-content>
+
+        <!-- Electron環境でない場合の表示 -->
+        <ng-template #browserMode>
+            <mat-card-content>
+                <p class="browser-mode-message">
+                    <mat-icon>warning</mat-icon>
+                    環境設定はElectronアプリケーション内でのみ利用可能です。
+                </p>
+            </mat-card-content>
+        </ng-template>
+
+    </mat-card>
+</div>

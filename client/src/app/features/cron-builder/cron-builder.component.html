@@ -1,0 +1,69 @@
+<div class="content-wrapper">
+    <!-- Cron式入力カード -->
+    <mat-card>
+        <mat-card-header>
+            <mat-card-title>Cronビルダー</mat-card-title>
+            <mat-card-subtitle>Cron式を入力すると、直近10回の実行スケジュールが表示されます。</mat-card-subtitle>
+        </mat-card-header>
+        <mat-card-content>
+            <mat-form-field appearance="fill" class="cron-input-field">
+                <mat-label>Cron式 (分 時 日 月 曜日)</mat-label>
+                <!-- 
+          ★★★ 修正点 ★★★
+          双方向バインディング [(ngModel)] をやめ、単方向の [value] と (input) に分離します。
+          - [value]="cronExpression": コンポーネントのプロパティ値をinputの表示に反映します。
+          - (input)="onCronExpressionChange($event)": inputイベントが発生するたびに、イベントオブジェクト($event)を引数としてメソッドを呼び出します。
+        -->
+                <input matInput [value]="cronExpression" (input)="onCronExpressionChange($event)"
+                    placeholder="* * * * *">
+            </mat-form-field>
+
+            <!-- 
+        ★★★ 修正点 ★★★
+        エラー表示を <mat-error> から通常の <div *ngIf="..."> に変更します。
+        これにより、フォームコントロールの状態に依存せず、errorMessageプロパティに
+        値が存在する場合に必ず表示されるようになります。
+      -->
+            <div *ngIf="errorMessage" class="error-message-container">
+                <mat-icon color="warn">error_outline</mat-icon>
+                <span>{{ errorMessage }}</span>
+            </div>
+
+            <div class="cron-hint">
+                <p>例:</p>
+                <ul>
+                    <li><code>0 2 * * *</code> - 毎日午前2時に実行</li>
+                    <li><code>*/15 * * * *</code> - 15分ごとに実行</li>
+                    <li><code>0 9-17 * * 1-5</code> - 平日の午前9時から午後5時まで、毎時0分に実行</li>
+                </ul>
+            </div>
+        </mat-card-content>
+    </mat-card>
+
+    <!-- 結果表示カード (変更なし) -->
+    <mat-card>
+        <mat-card-header>
+            <mat-card-title>実行スケジュール</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+            <mat-list *ngIf="!errorMessage && schedules.length > 0; else noSchedules">
+                <mat-list-item *ngFor="let schedule of schedules; let i = index">
+                    <mat-icon matListItemIcon>update</mat-icon>
+                    <div matListItemTitle>
+                        {{ schedule | date: 'yyyy/MM/dd(E) HH:mm:ss' }}
+                    </div>
+                    <div matListItemLine>
+                        {{ i + 1 }} 回目の実行
+                    </div>
+                </mat-list-item>
+            </mat-list>
+
+            <ng-template #noSchedules>
+                <div class="empty-message">
+                    <mat-icon *ngIf="!errorMessage">info</mat-icon>
+                    <p>{{ errorMessage ? '式を修正してください。' : '有効なCron式を入力してください。' }}</p>
+                </div>
+            </ng-template>
+        </mat-card-content>
+    </mat-card>
+</div>

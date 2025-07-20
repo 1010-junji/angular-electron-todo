@@ -1,0 +1,58 @@
+<div class="content-wrapper">
+    <!-- 入力エリア -->
+    <mat-card>
+        <mat-card-header>
+            <mat-card-title>正規表現ビルダー</mat-card-title>
+        </mat-card-header>
+        <mat-card-content class="input-grid">
+            <!-- 正規表現入力 -->
+            <mat-form-field appearance="fill" class="regex-input-field">
+                <mat-label>正規表現</mat-label>
+                <input matInput [(ngModel)]="regexString" (ngModelChange)="onInputChange()">
+                <mat-error *ngIf="errorMessage">{{ errorMessage }}</mat-error>
+            </mat-form-field>
+
+            <!-- オプション設定 -->
+            <div class="options-container">
+                <mat-slide-toggle [(ngModel)]="regexOptions.global" (change)="onInputChange()">
+                    全体検索 (g)
+                </mat-slide-toggle>
+                <mat-slide-toggle [(ngModel)]="regexOptions.ignoreCase" (change)="onInputChange()">
+                    大文字/小文字を無視 (i)
+                </mat-slide-toggle>
+            </div>
+
+            <!-- テスト文字列入力 -->
+            <mat-form-field appearance="fill" class="test-string-field">
+                <mat-label>テスト文字列</mat-label>
+                <textarea matInput cdkTextareaAutosize #autosize="cdkTextareaAutosize" cdkAutosizeMinRows="5"
+                    cdkAutosizeMaxRows="15" [(ngModel)]="testString" (ngModelChange)="onInputChange()"></textarea>
+            </mat-form-field>
+        </mat-card-content>
+    </mat-card>
+
+    <!-- 結果表示エリア -->
+    <mat-card>
+        <mat-card-header>
+            <mat-card-title>マッチング結果</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+            <!-- マッチした文字列のハイライト表示 -->
+            <div class="result-section">
+                <h3>ハイライト表示</h3>
+                <div class="highlighted-text" [innerHTML]="highlightedResult"></div>
+            </div>
+
+            <!-- マッチした文字列のリスト表示 -->
+            <div class="result-section">
+                <h3>マッチした文字列 ({{ matches.length }}件)</h3>
+                <div *ngIf="matches.length > 0; else noMatches" class="matches-list">
+                    <span *ngFor="let match of matches" class="match-chip">{{ match }}</span>
+                </div>
+                <ng-template #noMatches>
+                    <p class="empty-message">マッチする文字列はありません。</p>
+                </ng-template>
+            </div>
+        </mat-card-content>
+    </mat-card>
+</div>

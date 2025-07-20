@@ -1,0 +1,74 @@
+.content-wrapper {
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.input-grid {
+    display: grid;
+    gap: 16px;
+}
+
+.regex-input-field {
+    width: 100%;
+}
+
+.test-string-field {
+    width: 100%;
+}
+
+.options-container {
+    display: flex;
+    gap: 20px;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.result-section {
+    margin-bottom: 24px;
+
+    h3 {
+        margin-top: 0;
+        margin-bottom: 12px;
+        font-weight: 500;
+        border-bottom: 1px solid #e0e0e0;
+        padding-bottom: 8px;
+    }
+}
+
+.highlighted-text {
+    padding: 16px;
+    background-color: #fafafa;
+    border: 1px solid #e0e0e0;
+    border-radius: 4px;
+    white-space: pre-wrap; // 改行やスペースを保持
+    word-break: break-all;
+    min-height: 50px;
+
+    mark {
+        background-color: #ffd740; // 明るい黄色
+        border-radius: 3px;
+        padding: 1px 2px;
+    }
+}
+
+.matches-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.match-chip {
+    background-color: #e3f2fd;
+    color: #1565c0;
+    padding: 4px 10px;
+    border-radius: 16px;
+    font-size: 14px;
+    font-family: monospace;
+}
+
+.empty-message {
+    color: #757575;
+    padding: 10px 0;
+}

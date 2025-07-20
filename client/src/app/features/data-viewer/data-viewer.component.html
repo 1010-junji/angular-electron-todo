@@ -1,0 +1,75 @@
+<div class="content-wrapper">
+    <mat-card>
+        <mat-card-header>
+            <mat-card-title>データ表示</mat-card-title>
+            <mat-card-subtitle>環境設定で指定したMySQLデータベースのテーブルデータを表示します。</mat-card-subtitle>
+        </mat-card-header>
+
+        <mat-card-content *ngIf="isElectron; else browserMode">
+            <!-- テーブル選択エリア -->
+            <div class="controls-area">
+                <mat-form-field appearance="fill">
+                    <mat-label>テーブルを選択</mat-label>
+                    <mat-select [value]="selectedTable" (valueChange)="onTableSelect($event)"
+                        [disabled]="isLoadingTables || isLoadingData">
+                        <mat-option *ngFor="let table of tables" [value]="table">
+                            {{ table }}
+                        </mat-option>
+                    </mat-select>
+                </mat-form-field>
+                <button mat-icon-button (click)="fetchTables()" [disabled]="isLoadingTables || isLoadingData"
+                    matTooltip="テーブル一覧を再取得">
+                    <mat-icon>refresh</mat-icon>
+                </button>
+            </div>
+
+            <!-- ローディング or エラー or データ表示 -->
+            <div class="data-area">
+                <!-- ローディングスピナー -->
+                <div *ngIf="isLoadingTables || isLoadingData" class="spinner-container">
+                    <mat-progress-spinner mode="indeterminate"></mat-progress-spinner>
+                    <p>{{ isLoadingTables ? 'テーブル一覧を取得中...' : 'テーブルデータを取得中...' }}</p>
+                </div>
+
+                <!-- エラーメッセージ -->
+                <div *ngIf="errorMessage && !isLoadingTables && !isLoadingData" class="error-container">
+                    <mat-icon color="warn">error</mat-icon>
+                    <p>{{ errorMessage }}</p>
+                    <a routerLink="/settings">環境設定を確認する</a>
+                </div>
+
+                <!-- データテーブル -->
+                <div *ngIf="!isLoadingData && tableData.length > 0 && !errorMessage" class="table-container">
+                    <table mat-table [dataSource]="tableData" class="mat-elevation-z8">
+                        <!-- カラム定義を動的に生成 -->
+                        <ng-container *ngFor="let column of displayedColumns" [matColumnDef]="column">
+                            <th mat-header-cell *matHeaderCellDef> {{column}} </th>
+                            <td mat-cell *matCellDef="let element"> {{element[column]}} </td>
+                        </ng-container>
+
+                        <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></tr>
+                        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+                    </table>
+                </div>
+
+                <!-- データが空の場合のメッセージ -->
+                <div *ngIf="!isLoadingData && selectedTable && tableData.length === 0 && !errorMessage"
+                    class="empty-data-container">
+                    <mat-icon>info_outline</mat-icon>
+                    <p>テーブル [{{ selectedTable }}] にはデータがありません。</p>
+                </div>
+            </div>
+
+        </mat-card-content>
+
+        <!-- Electron環境でない場合の表示 -->
+        <ng-template #browserMode>
+            <mat-card-content>
+                <p class="browser-mode-message">
+                    <mat-icon>warning</mat-icon>
+                    データ表示機能はElectronアプリケーション内でのみ利用可能です。
+                </p>
+            </mat-card-content>
+        </ng-template>
+    </mat-card>
+</div>

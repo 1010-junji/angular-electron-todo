@@ -1,0 +1,40 @@
+.content-wrapper {
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+mat-card-content {
+    mat-form-field {
+        width: 100%;
+    }
+}
+
+.todo-list-card {
+    margin-top: 20px;
+}
+
+mat-list-item {
+    // Flexboxを使ってチェックボックスと削除ボタンを両端に配置
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+
+    .todo-checkbox {
+        flex-grow: 1;
+    }
+}
+
+// 完了したタスクに打ち消し線をつける
+.completed {
+    text-decoration: line-through;
+    color: #9e9e9e; // グレー
+}
+
+.empty-message {
+    text-align: center;
+    color: #757575;
+    padding: 20px;
+}

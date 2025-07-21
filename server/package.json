@@ -1,5 +1,5 @@
 {
-  "name": "br-operation-toolbox",
+  "name": "br-operational-toolkit",
   "version": "0.1.0",
   "main": "dist/main.js",
   "scripts": {
@@ -22,14 +22,14 @@
   ],
   "author": "JO",
   "license": "MIT",
-  "description": "BizRobo! の運用を便利にするツールボックスです。",
+  "description": "BizRobo! の運用を便利にするツールキットです。",
   "dependencies": {
     "electron-serve": "^1.3.0",
     "mysql2": "^3.14.2"
   },
   "build": {
-    "appId": "com.bizrobo.opekai.br-operation-toolbox",
-    "productName": "BR Operation Toolbox",
+    "appId": "com.bizrobo.opekai.br-operational-toolkit",
+    "productName": "BR Operational Toolkit",
     "win": {
       "icon": "assets/icon.ico",
       "target": [
@@ -45,7 +45,7 @@
     },
     "extraResources": [
       {
-        "from": "../client/dist/br-operation-toolbox",
+        "from": "../client/dist/br-operational-toolkit",
         "to": "app",
         "filter": [
           "**/*"

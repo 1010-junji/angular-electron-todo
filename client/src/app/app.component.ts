@@ -7,7 +7,7 @@ import { Component } from '@angular/core';
 })
 export class AppComponent {
   // アプリケーションのタイトル
-  title = 'BR Operation Toolbox';
+  title = 'BR Operational Toolkit';
 
   // 各機能へのナビゲーションメニューの定義
   features = [

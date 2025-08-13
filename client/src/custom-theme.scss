@@ -1,0 +1,79 @@
+@use '@angular/material' as mat;
+
+// Angular Materialのコアスタイルを一度だけインクルードする
+@include mat.core();
+
+// -----------------
+// カラーパレットの定義
+// -----------------
+
+// Primaryカラー: Green系 (Material DesignのGreenパレットをベースに)
+// https://material.io/design/color/the-color-system.html#tools-for-picking-colors
+$bizrobo-primary-palette: (
+    50: #e8f5e9,
+    100: #c8e6c9,
+    200: #a5d6a7,
+    300: #81c784,
+    400: #66bb6a,
+    500: #4caf50,
+    // 基本色
+    600: #43a047,
+    700: #388e3c,
+    800: #2e7d32,
+    900: #1b5e20,
+    contrast: (50: #000000,
+        100: #000000,
+        200: #000000,
+        300: #000000,
+        400: #000000,
+        500: #ffffff, // 基本色に対するテキスト色
+        600: #ffffff,
+        700: #ffffff,
+        800: #ffffff,
+        900: #ffffff,
+    )
+);
+
+// Accent(Secondary)カラー: Orange系
+$bizrobo-accent-palette: (
+    50: #fff3e0,
+    100: #ffe0b2,
+    200: #ffcc80,
+    300: #ffb74d,
+    400: #ffa726,
+    500: #ff9800,
+    // 基本色
+    600: #fb8c00,
+    700: #f57c00,
+    800: #ef6c00,
+    900: #e65100,
+    contrast: (50: #000000,
+        100: #000000,
+        200: #000000,
+        300: #000000,
+        400: #000000,
+        500: #000000,
+        600: #000000,
+        700: #000000,
+        800: #ffffff,
+        900: #ffffff,
+    )
+);
+
+// Warnカラー: Red系 (デフォルトを使用)
+$bizrobo-warn-palette: mat.define-palette(mat.$red-palette);
+
+
+// -----------------
+// テーマの作成
+// -----------------
+$bizrobo-app-theme: mat.define-light-theme(
+    (color: (primary: mat.define-palette($bizrobo-primary-palette, 700), // 700を基本色とする
+            accent: mat.define-palette($bizrobo-accent-palette, 500),
+            warn: $bizrobo-warn-palette,
+    )));
+
+// -----------------
+// テーマの適用
+// -----------------
+@include mat.all-component-themes($bizrobo-app-theme);

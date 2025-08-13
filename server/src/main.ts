@@ -35,6 +35,8 @@ function createWindow(): void {
     },
   });
 
+  mainWindow.setMenu(null);
+
   if (isDev) {
     // 開発モードの場合: Angularの開発サーバーに接続
     mainWindow.loadURL('http://localhost:4200');

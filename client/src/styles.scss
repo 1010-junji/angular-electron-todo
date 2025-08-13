@@ -1,3 +1,14 @@
+@import 'custom-theme.scss';
+
+// Material Iconsをローカルから読み込む
+@import 'material-icons/iconfont/material-icons.css';
+
+// Robotoフォントをローカルから読み込む
+@import '@fontsource/roboto/300.css';
+@import '@fontsource/roboto/400.css';
+@import '@fontsource/roboto/500.css';
+@import '@fontsource/roboto/700.css';
+
 /* You can add global styles to this file, and also import other style files */
 
 html, body { height: 100%; }
